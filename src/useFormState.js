@@ -112,7 +112,7 @@ export default function useFormState(initialState, options) {
 
     function validate(
       e,
-      value = isRaw ? undefined : e.target.value,
+      value = isRaw ? e : e.target.value,
       values = formState.current.values,
     ) {
       let error;
@@ -266,7 +266,7 @@ export default function useFormState(initialState, options) {
          */
         /* istanbul ignore else */
         if (!formState.current.touched[name] || isDirty(name)) {
-          validate(e);
+          if (inputOptions.validateOnBlur) validate(e);
           setDirty(name, false);
         }
       }),

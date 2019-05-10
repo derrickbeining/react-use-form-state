@@ -481,7 +481,7 @@ describe('Input blur behavior', () => {
     expect(formState.current).toEqual(
       expect.objectContaining({
         values: { name: '' },
-        validity: { name: true },
+        validity: {},
         errors: {},
         touched: { name: true },
       }),
@@ -519,7 +519,7 @@ describe('Input blur behavior', () => {
 
   it('marks input as invalid on blur', () => {
     const { blur, formState } = renderWithFormState(([, { text }]) => (
-      <input {...text('name')} required />
+      <input {...text({ name: 'name', validateOnBlur: true })} required />
     ));
     blur();
     expect(formState.current).toEqual(
