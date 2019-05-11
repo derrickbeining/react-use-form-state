@@ -441,13 +441,13 @@ function useFormState(initialState, options) {
       getIdProp = _useInputId.getIdProp;
 
   var _useCache = useCache(),
-      setDirty = _useCache.set,
-      isDirty = _useCache.has;
+      setDirty = _useCache.set;
 
   var callbacks = useCache();
   var devWarnings = useCache();
 
   function warn(key, type, message) {
+    /* istanbul ignore else */
     if (!devWarnings.has("".concat(type, ":").concat(key))) {
       devWarnings.set("".concat(type, ":").concat(key), true); // eslint-disable-next-line no-console
 
@@ -676,18 +676,7 @@ function useFormState(initialState, options) {
           touch(e);
           inputOptions.onBlur(e);
           formOptions.onBlur(e);
-          /**
-           * Limiting input validation on blur to:
-           * A) when it's either touched for the first time
-           * B) when it's marked as dirty due to a value change
-           */
-
-          /* istanbul ignore else */
-
-          if (!formState.current.touched[name] || isDirty(name)) {
-            if (inputOptions.validateOnBlur) validate(e);
-            setDirty(name, false);
-          }
+          if (inputOptions.validateOnBlur) validate(e);
         })
       }, getIdProp('id', name, ownValue));
 
