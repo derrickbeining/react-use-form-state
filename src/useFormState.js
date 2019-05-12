@@ -12,8 +12,6 @@ import {
   TEXTAREA,
   SELECT_MULTIPLE,
   LABEL,
-  ON_CHANGE_HANDLER,
-  ON_BLUR_HANDLER,
   CONSOLE_TAG,
 } from './constants';
 
@@ -31,7 +29,6 @@ export default function useFormState(initialState, options) {
   const formState = useState({ initialState, ...formOptions });
   const { getIdProp } = useInputId(formOptions.withIds);
   const { set: setDirty } = useCache();
-  const callbacks = useCache();
   const devWarnings = useCache();
 
   function warn(key, type, message) {
@@ -203,7 +200,7 @@ export default function useFormState(initialState, options) {
 
         return hasValueInState ? formState.current.values[name] : '';
       },
-      onChange: callbacks.getOrSet(ON_BLUR_HANDLER + key, e => {
+      onChange: e => {
         setDirty(name, true);
         let value;
         if (isRaw) {
@@ -253,15 +250,15 @@ export default function useFormState(initialState, options) {
         }
 
         formState.setValues(partialNewState);
-      }),
-      onBlur: callbacks.getOrSet(ON_CHANGE_HANDLER + key, e => {
+      },
+      onBlur: e => {
         touch(e);
 
         inputOptions.onBlur(e);
         formOptions.onBlur(e);
 
         if (inputOptions.validateOnBlur) validate(e);
-      }),
+      },
       ...getIdProp('id', name, ownValue),
     };
 
