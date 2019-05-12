@@ -310,12 +310,7 @@ function useCache() {
     return cache.current.set(key, value);
   };
 
-  var getOrSet = function getOrSet(key, value) {
-    return has(key) ? get(key) : set(key, value) && get(key);
-  };
-
   return {
-    getOrSet: getOrSet,
     set: set,
     has: has,
     get: get
@@ -415,8 +410,6 @@ var URL = 'url';
 var WEEK = 'week';
 var LABEL = 'label';
 var TYPES = [CHECKBOX, COLOR, DATE, EMAIL, MONTH, NUMBER, PASSWORD, RADIO, RANGE, RAW, SEARCH, SELECT, SELECT_MULTIPLE, TEL, TEXT, TEXTAREA, TIME, URL, WEEK];
-var ON_CHANGE_HANDLER = 0;
-var ON_BLUR_HANDLER = 1;
 var CONSOLE_TAG = '[useFormState]';
 
 var defaultFromOptions = {
@@ -439,7 +432,6 @@ function useFormState(initialState, options) {
   var _useCache = useCache(),
       setDirty = _useCache.set;
 
-  var callbacks = useCache();
   var devWarnings = useCache();
 
   function warn(key, type, message) {
@@ -620,7 +612,7 @@ function useFormState(initialState, options) {
           return hasValueInState ? formState.current.values[name] : '';
         },
 
-        onChange: callbacks.getOrSet(ON_BLUR_HANDLER + key, function (e) {
+        onChange: function onChange(e) {
           setDirty(name, true);
           var value;
 
@@ -667,13 +659,13 @@ function useFormState(initialState, options) {
           }
 
           formState.setValues(partialNewState);
-        }),
-        onBlur: callbacks.getOrSet(ON_CHANGE_HANDLER + key, function (e) {
+        },
+        onBlur: function onBlur(e) {
           touch(e);
           inputOptions.onBlur(e);
           formOptions.onBlur(e);
           if (inputOptions.validateOnBlur) validate(e);
-        })
+        }
       }, getIdProp('id', name, ownValue));
 
       return isRaw ? {
